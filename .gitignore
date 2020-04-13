@@ -1,0 +1,6 @@
+*.suo
+.dtbcache
+**/.vs/
+**/bin/Debug/
+**/bin/Release/
+**/obj/

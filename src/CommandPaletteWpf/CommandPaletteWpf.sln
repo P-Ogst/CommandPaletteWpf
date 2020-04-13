@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandPaletteLibrary", "CommandPaletteLibrary\CommandPaletteLibrary.csproj", "{C1D97AC2-0D08-4BFD-8E7A-EF2F155434FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandPaletteSandbox", "CommandPaletteSandbox\CommandPaletteSandbox.csproj", "{F976F83E-86D9-4C67-82C0-A3F388591D57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1D97AC2-0D08-4BFD-8E7A-EF2F155434FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1D97AC2-0D08-4BFD-8E7A-EF2F155434FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1D97AC2-0D08-4BFD-8E7A-EF2F155434FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1D97AC2-0D08-4BFD-8E7A-EF2F155434FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F976F83E-86D9-4C67-82C0-A3F388591D57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F976F83E-86D9-4C67-82C0-A3F388591D57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F976F83E-86D9-4C67-82C0-A3F388591D57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F976F83E-86D9-4C67-82C0-A3F388591D57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F07E0C09-81A8-4DE9-8B4A-9CA1CAB163E6}
+	EndGlobalSection
+EndGlobal

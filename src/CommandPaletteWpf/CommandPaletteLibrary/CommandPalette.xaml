@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="CommandPaletteLibrary.CommandPalette"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CommandPaletteLibrary"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="commandPaletteUserControl">
+    <Popup Width="400" Height="30"
+           x:Name="commandPaletteSearchPopup"
+           IsOpen="{Binding IsOpen, ElementName=commandPaletteUserControl}"
+           StaysOpen="False"
+           Placement="Top">
+        <Border Background="Gray">
+            <Grid>
+                <TextBox x:Name="commandFindTextBox" HorizontalContentAlignment="Stretch" Text="{Binding SearchText, ElementName=commandPaletteUserControl,UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Down" Command="{Binding SelectNextItemCommand, ElementName=commandPaletteUserControl}"/>
+                        <KeyBinding Key="Up" Command="{Binding SelectPrevItemCommand, ElementName=commandPaletteUserControl}"/>
+                        <KeyBinding Gesture="Enter" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}" CommandParameter="{Binding SelectedItem, ElementName=commandResultListView}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Popup x:Name="resultPopup"
+                       IsOpen="{Binding IsResultPopupOpen, ElementName=commandPaletteUserControl}"
+                       Placement="Bottom">
+                    <Border BorderBrush="Gray">
+                        <ListView x:Name="commandResultListView" ItemsSource="{Binding CommandList, ElementName=commandPaletteUserControl}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel.InputBindings>
+                                            <MouseBinding Gesture="LeftClick" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}" CommandParameter="{Binding .}"/>
+                                        </StackPanel.InputBindings>
+                                        <TextBlock Text="{Binding Name}"/>
+                                        <TextBlock Text=" : "/>
+                                        <TextBlock Text="{Binding Explanation}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Border>
+                </Popup>
+            </Grid>
+        </Border>
+    </Popup>
+</UserControl>
