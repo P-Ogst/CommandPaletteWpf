@@ -14,13 +14,18 @@
            Placement="Top">
         <Border Background="Gray">
             <Grid>
-                <TextBox x:Name="commandFindTextBox" HorizontalContentAlignment="Stretch" Text="{Binding SearchText, ElementName=commandPaletteUserControl,UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.InputBindings>
+                <RichTextBox x:Name="commandFindTextBox" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center">
+                    <RichTextBox.InputBindings>
                         <KeyBinding Key="Down" Command="{Binding SelectNextItemCommand, ElementName=commandPaletteUserControl}"/>
                         <KeyBinding Key="Up" Command="{Binding SelectPrevItemCommand, ElementName=commandPaletteUserControl}"/>
                         <KeyBinding Gesture="Enter" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}" CommandParameter="{Binding SelectedItem, ElementName=commandResultListView}"/>
-                    </TextBox.InputBindings>
-                </TextBox>
+                    </RichTextBox.InputBindings>
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding SearchText, ElementName=commandPaletteUserControl,UpdateSourceTrigger=PropertyChanged}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
                 <Popup x:Name="resultPopup"
                        IsOpen="{Binding IsResultPopupOpen, ElementName=commandPaletteUserControl}"
                        Placement="Bottom">
