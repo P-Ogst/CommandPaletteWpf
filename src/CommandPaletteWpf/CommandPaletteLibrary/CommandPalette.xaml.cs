@@ -138,8 +138,9 @@ namespace CommandPaletteLibrary
                     }
 
                     SearchIndex = -1;
-
+                    commandFindTextBox.Clear();
                     SearchText = string.Empty;
+                    IsOpen = false;
                 });
             SelectPrevItemCommand = new DelegateCommand(_ =>
             {

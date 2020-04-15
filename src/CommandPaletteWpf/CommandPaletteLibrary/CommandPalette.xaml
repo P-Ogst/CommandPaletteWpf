@@ -7,6 +7,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="commandPaletteUserControl">
+    <UserControl.Resources>
+        <DataTemplate x:Key="ExplanationToken">
+            <Border Background="Orange" Opacity="0.8" Padding="2" Margin="2">
+                <TextBlock TextWrapping="NoWrap" Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
     <Popup Width="400" Height="30"
            x:Name="commandPaletteSearchPopup"
            IsOpen="{Binding IsOpen, ElementName=commandPaletteUserControl}"
@@ -14,7 +21,7 @@
            Placement="Top">
         <Border Background="Gray">
             <Grid>
-                <local:TokenTextBox x:Name="commandFindTextBox" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center">
+                <local:TokenTextBox x:Name="commandFindTextBox" TokenTemplate="{StaticResource ExplanationToken}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center">
                     <local:TokenTextBox.InputBindings>
                         <KeyBinding Key="Down" Command="{Binding SelectNextItemCommand, ElementName=commandPaletteUserControl}"/>
                         <KeyBinding Key="Up" Command="{Binding SelectPrevItemCommand, ElementName=commandPaletteUserControl}"/>
