@@ -22,6 +22,7 @@ namespace CommandPaletteLibrary
         public TokenTextBox()
         {
         }
+
         public void ReplaceCurrentTextToToken(object token)
         {
             var targetParagraph = Document.Blocks.First() as Paragraph;

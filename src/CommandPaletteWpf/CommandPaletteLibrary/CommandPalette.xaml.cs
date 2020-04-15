@@ -42,14 +42,14 @@ namespace CommandPaletteLibrary
         public static readonly DependencyProperty CommandListProperty =
             DependencyProperty.Register(nameof(CommandList), typeof(ObservableCollection<IPaletteCommand>), typeof(CommandPalette), new PropertyMetadata(null, OnUpdateCommandList));
 
-        internal bool IsResultPopupOpen
+        internal bool IsCommandResultPopupOpen
         {
-            get { return (bool)GetValue(IsResultPopupOpenProperty); }
-            set { SetValue(IsResultPopupOpenProperty, value); }
+            get { return (bool)GetValue(IsCommandResultPopupOpenProperty); }
+            set { SetValue(IsCommandResultPopupOpenProperty, value); }
         }
 
-        internal static readonly DependencyProperty IsResultPopupOpenProperty =
-            DependencyProperty.Register(nameof(IsResultPopupOpen),
+        internal static readonly DependencyProperty IsCommandResultPopupOpenProperty =
+            DependencyProperty.Register(nameof(IsCommandResultPopupOpen),
                                         typeof(bool),
                                         typeof(CommandPalette),
                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -185,12 +185,13 @@ namespace CommandPaletteLibrary
 
             UpdateViewSource();
 
-            if (commandResultListView.SelectedIndex == -1 && commandResultListView.Items.Count != 0)
+            if (commandResultListView.SelectedIndex == -1 
+                && commandResultListView.Items.Count != 0)
             {
                 commandResultListView.SelectedIndex = 0;
             }
 
-            IsResultPopupOpen = true;
+            IsCommandResultPopupOpen = true;
         }
 
         private bool Contains(string src, string value)
