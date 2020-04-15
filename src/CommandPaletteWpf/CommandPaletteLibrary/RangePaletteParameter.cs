@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CommandPaletteLibrary
 {
-    public class RangePaletteParameter : IRangePaletteParameter
+    public class RangePaletteParameter : IInputPaletteParameter
     {
         public object Min { get; }
 

@@ -5,8 +5,9 @@ using System.Text;
 
 namespace CommandPaletteLibrary
 {
-    public interface ISearchPaletteParameter<T> : IPaletteParameter
+    public interface ISearchPaletteParameter : IPaletteParameter
     {
-        public ObservableCollection<T> CandidateParameters { get; }
+        // TODO: ISearchItem を足したほうがよさそう
+        public ObservableCollection<object> CandidateParameters { get; }
     }
 }
