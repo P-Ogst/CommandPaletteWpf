@@ -54,6 +54,19 @@ namespace CommandPaletteLibrary
                                         typeof(CommandPalette),
                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        public bool IsParameterResultPopupOpen
+        {
+            get { return (bool)GetValue(IsParameterResultPopupOpenProperty); }
+            set { SetValue(IsParameterResultPopupOpenProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsParameterResultPopupOpen.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsParameterResultPopupOpenProperty =
+            DependencyProperty.Register(nameof(IsParameterResultPopupOpen),
+                                        typeof(bool),
+                                        typeof(CommandPalette),
+                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
         internal ICommand SelectNextItemCommand
         {
             get { return (ICommand)GetValue(SelectNextItemCommandProperty); }
@@ -126,6 +139,8 @@ namespace CommandPaletteLibrary
 
                     if (paletteCommand.Parameters.Count() != SearchIndex)
                     {
+                        IsCommandResultPopupOpen = false;
+                        IsParameterResultPopupOpen = true;
                         return;
                     }
 
@@ -191,7 +206,16 @@ namespace CommandPaletteLibrary
                 commandResultListView.SelectedIndex = 0;
             }
 
-            IsCommandResultPopupOpen = true;
+            if (SearchIndex == -1)
+            {
+                IsCommandResultPopupOpen = true;
+                IsParameterResultPopupOpen = false;
+            }
+            else
+            {
+                IsCommandResultPopupOpen = false;
+                IsParameterResultPopupOpen = true;
+            }
         }
 
         private bool Contains(string src, string value)

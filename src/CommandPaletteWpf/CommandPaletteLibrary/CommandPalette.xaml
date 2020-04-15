@@ -58,6 +58,15 @@
                         </ListView>
                     </Border>
                 </Popup>
+                <Popup x:Name="parameterResultPopup"
+                       IsOpen="{Binding IsParameterResultPopupOpen, ElementName=commandPaletteUserControl}"
+                       Placement="Bottom">
+                    <Border BorderBrush="Gray">
+                        <StackPanel Background="White">
+                            <TextBlock Text="パラメーターの説明です" Margin="2"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
             </Grid>
         </Border>
     </Popup>
