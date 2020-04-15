@@ -6,7 +6,9 @@ namespace CommandPaletteLibrary
 {
     public interface IPaletteParameter
     {
-        Type ParameterType { get; }
+        event EventHandler BeginInput;
+        Func<object, bool> ValidateInput { get; }
+
         string Name { get; }
         string Explanation { get; }
     }

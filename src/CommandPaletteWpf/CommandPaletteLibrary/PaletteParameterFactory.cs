@@ -6,13 +6,13 @@ namespace CommandPaletteLibrary
 {
     public static class PaletteParameterFactory
     {
-        public static IPaletteParameter CreateRangeParameter<T>(T min, T max, string name, string explanation = null) where T : IComparable
+        public static IPaletteParameter CreateMinMaxParameter<T>(T min, T max, string name, string explanation = null) where T : IComparable
         {
             if (min.CompareTo(max) > 0)
             {
                 throw new ArgumentException();
             }
-            return new RangePaletteParameter(min, max, typeof(T), name, explanation);
+            return new MinMaxPaletteParameter<T>(min, max, name, explanation);
         }
     }
 }

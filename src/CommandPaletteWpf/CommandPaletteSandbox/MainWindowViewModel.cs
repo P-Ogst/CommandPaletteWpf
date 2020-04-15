@@ -98,7 +98,7 @@ namespace CommandPaletteSandbox
             {
                 Volume.Value = volume;
             });
-            var parameter = PaletteParameterFactory.CreateRangeParameter(0.0f, 1.0f, "Volume", "ボリュームを変更します (0.0 - 1.0)");
+            var parameter = PaletteParameterFactory.CreateMinMaxParameter(0.0f, 1.0f, "Volume", "ボリュームを変更します (0.0 - 1.0)");
             _commandService.AddCommand(ChangeVolumeCommand, nameof(ChangeVolumeCommand), "プレイバックボリュームを変更します", parameter);
             RecordingDirectory = new ReactiveProperty<string>().AddTo(Disposable);
             SelectRecordingDirectoryCommand = State
