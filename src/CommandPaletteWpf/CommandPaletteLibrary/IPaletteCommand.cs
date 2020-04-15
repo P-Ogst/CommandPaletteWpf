@@ -10,5 +10,6 @@ namespace CommandPaletteLibrary
         ICommand Command { get; }
         string Name { get; }
         string Explanation { get; }
+        public IEnumerable<IPaletteParameter> Parameters { get; }
     }
 }

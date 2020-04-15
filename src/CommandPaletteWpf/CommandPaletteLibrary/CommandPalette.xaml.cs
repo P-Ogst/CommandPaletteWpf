@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -80,6 +81,15 @@ namespace CommandPaletteLibrary
         internal static readonly DependencyProperty ExecuteCommandProperty =
             DependencyProperty.Register(nameof(ExecuteCommand), typeof(ICommand), typeof(CommandPalette), new PropertyMetadata(null));
 
+        internal int SearchIndex
+        {
+            get { return (int)GetValue(SearchIndexProperty); }
+            set { SetValue(SearchIndexProperty, value); }
+        }
+
+        internal static readonly DependencyProperty SearchIndexProperty =
+            DependencyProperty.Register(nameof(SearchIndex), typeof(int), typeof(CommandPalette), new PropertyMetadata(-1));
+
         internal string SearchText
         {
             get { return (string)GetValue(SearchTextProperty); }
@@ -95,12 +105,41 @@ namespace CommandPaletteLibrary
             ExecuteCommand = new DelegateCommand((command) =>
                 {
                     var paletteCommand = (command as IPaletteCommand);
-                    if (paletteCommand != null &&
-                        paletteCommand.Command.CanExecute(null))
+                    if (paletteCommand == null)
+                    {
+                        SearchIndex = -1;
+                        commandPaletteSearchPopup.IsOpen = false;
+                    }
+
+                    if (SearchIndex == -1)
+                    {
+                        commandFindTextBox.ReplaceCurrentTextToToken(paletteCommand);
+                        commandFindTextBox.FocusToLast();
+                    }
+                    else if (SearchIndex != paletteCommand.Parameters.Count() - 1)
+                    {
+                        commandFindTextBox.ReplaceCurrentTextToToken(paletteCommand.Parameters.ElementAt(SearchIndex));
+                        commandFindTextBox.FocusToLast();
+                    }
+
+                    SearchIndex++;
+
+                    if (paletteCommand.Parameters.Count() != SearchIndex)
+                    {
+                        return;
+                    }
+
+                    if (paletteCommand.Command.CanExecute(null))
                     {
                         (command as IPaletteCommand)?.Command?.Execute(null);
                     }
-                    commandPaletteSearchPopup.IsOpen = false;
+                    else
+                    {
+                    }
+
+                    SearchIndex = -1;
+
+                    SearchText = string.Empty;
                 });
             SelectPrevItemCommand = new DelegateCommand(_ =>
             {
