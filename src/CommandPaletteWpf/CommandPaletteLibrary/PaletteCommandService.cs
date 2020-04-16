@@ -14,9 +14,9 @@ namespace CommandPaletteLibrary
         public PaletteCommandService()
         {}
 
-        public void AddCommand(ICommand command, string name = null, string explanation = null, params IPaletteParameter[] parameters)
+        public void AddCommand(ICommand command, string name = null, string explanation = null, Func<IEnumerable<object>, object> createCommandParameter = null, params IPaletteParameter[] parameters)
         {
-            _commandList.Add(new PaletteCommand(command, name, explanation, parameters));
+            _commandList.Add(new PaletteCommand(command, name, explanation, createCommandParameter, parameters));
         }
     }
 }

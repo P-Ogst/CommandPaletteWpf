@@ -21,6 +21,9 @@ namespace CommandPaletteLibrary
     /// </summary>
     public partial class CommandPalette : UserControl
     {
+        private IPaletteCommand _paletteCommand = null;
+        private IList<InputParameter> _inputParameterList = new List<InputParameter>();
+
         public bool IsOpen
         {
             get { return (bool)GetValue(IsOpenProperty); }
@@ -60,7 +63,6 @@ namespace CommandPaletteLibrary
             set { SetValue(IsParameterResultPopupOpenProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for IsParameterResultPopupOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsParameterResultPopupOpenProperty =
             DependencyProperty.Register(nameof(IsParameterResultPopupOpen),
                                         typeof(bool),
@@ -103,6 +105,15 @@ namespace CommandPaletteLibrary
         internal static readonly DependencyProperty SearchIndexProperty =
             DependencyProperty.Register(nameof(SearchIndex), typeof(int), typeof(CommandPalette), new PropertyMetadata(-1));
 
+        public string ParameterExplanation
+        {
+            get { return (string)GetValue(ParameterExplanationProperty); }
+            set { SetValue(ParameterExplanationProperty, value); }
+        }
+
+        public static readonly DependencyProperty ParameterExplanationProperty =
+            DependencyProperty.Register(nameof(ParameterExplanation), typeof(string), typeof(CommandPalette), new PropertyMetadata(string.Empty));
+
         internal string SearchText
         {
             get { return (string)GetValue(SearchTextProperty); }
@@ -115,10 +126,14 @@ namespace CommandPaletteLibrary
         public CommandPalette()
         {
             InitializeComponent();
-            ExecuteCommand = new DelegateCommand((command) =>
+            ExecuteCommand = new DelegateCommand(_ =>
                 {
-                    var paletteCommand = (command as IPaletteCommand);
-                    if (paletteCommand == null)
+                    if (SearchIndex == -1)
+                    {
+                        _paletteCommand = commandResultListView.SelectedItem as IPaletteCommand;
+                    }
+
+                    if (_paletteCommand == null)
                     {
                         SearchIndex = -1;
                         commandPaletteSearchPopup.IsOpen = false;
@@ -126,27 +141,38 @@ namespace CommandPaletteLibrary
 
                     if (SearchIndex == -1)
                     {
-                        commandFindTextBox.ReplaceCurrentTextToToken(paletteCommand);
+                        commandFindTextBox.ReplaceCurrentTextToToken(_paletteCommand);
                         commandFindTextBox.FocusToLast();
                     }
-                    else if (SearchIndex != paletteCommand.Parameters.Count() - 1)
+                    else if (SearchIndex != _paletteCommand.Parameters.Count())
                     {
-                        commandFindTextBox.ReplaceCurrentTextToToken(paletteCommand.Parameters.ElementAt(SearchIndex));
+                        var focusParameter = _paletteCommand.Parameters.ElementAt(SearchIndex);
+                        if (!focusParameter.ValidateInput(SearchText))
+                        {
+                            return;
+                        }
+                        var inputParameter = new InputParameter(focusParameter.Name, focusParameter.CreateInput(SearchText), focusParameter.CreateInputExplanation(SearchText));
+
+                        commandFindTextBox.ReplaceCurrentTextToToken(inputParameter);
                         commandFindTextBox.FocusToLast();
+                        _inputParameterList.Add(inputParameter);
                     }
 
                     SearchIndex++;
 
-                    if (paletteCommand.Parameters.Count() != SearchIndex)
+                    if (_paletteCommand.Parameters.Count() != SearchIndex)
                     {
                         IsCommandResultPopupOpen = false;
                         IsParameterResultPopupOpen = true;
+                        ParameterExplanation = _paletteCommand.Parameters.ElementAt(SearchIndex).Explanation;
                         return;
                     }
 
-                    if (paletteCommand.Command.CanExecute(null))
+                    var commandParameter = GenerateCommandParameter(_paletteCommand, _inputParameterList);
+
+                    if (_paletteCommand.Command.CanExecute(commandParameter))
                     {
-                        (command as IPaletteCommand)?.Command?.Execute(null);
+                        _paletteCommand.Command.Execute(commandParameter);
                     }
                     else
                     {
@@ -154,6 +180,9 @@ namespace CommandPaletteLibrary
 
                     SearchIndex = -1;
                     commandFindTextBox.Clear();
+                    _inputParameterList.Clear();
+                    _paletteCommand = null;
+                    ParameterExplanation = string.Empty;
                     SearchText = string.Empty;
                     IsOpen = false;
                 });
@@ -187,6 +216,21 @@ namespace CommandPaletteLibrary
             });
             commandPaletteSearchPopup.Opened += OnOpen;
             commandPaletteSearchPopup.Closed += OnClose;
+        }
+
+        private object GenerateCommandParameter(IPaletteCommand paletteCommand, IList<InputParameter> inputParameterList)
+        {
+            var parameterList = new List<object>();
+            foreach(var inputParameter in inputParameterList)
+            {
+                parameterList.Add(inputParameter.Input);
+            }
+
+            if (paletteCommand.CreateCommandParameter == null)
+            {
+                return null;
+            }
+            return paletteCommand.CreateCommandParameter(parameterList);
         }
 
         private void OnClose(object sender, EventArgs e)

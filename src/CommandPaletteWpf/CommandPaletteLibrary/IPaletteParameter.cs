@@ -8,6 +8,8 @@ namespace CommandPaletteLibrary
     {
         event EventHandler BeginInput;
         Func<object, bool> ValidateInput { get; }
+        Func<object, object> CreateInput { get; }
+        Func<object, string> CreateInputExplanation { get; }
 
         string Name { get; }
         string Explanation { get; }

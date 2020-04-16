@@ -4,6 +4,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -99,7 +100,14 @@ namespace CommandPaletteSandbox
                 Volume.Value = volume;
             });
             var parameter = PaletteParameterFactory.CreateMinMaxParameter(0.0f, 1.0f, "Volume", "ボリュームを変更します (0.0 - 1.0)");
-            _commandService.AddCommand(ChangeVolumeCommand, nameof(ChangeVolumeCommand), "プレイバックボリュームを変更します", parameter);
+            _commandService.AddCommand(ChangeVolumeCommand,
+                                       nameof(ChangeVolumeCommand),
+                                       "プレイバックボリュームを変更します",
+                                       (paramList) =>
+                                       {
+                                           return paramList.First();
+                                       },
+                                       parameter);
             RecordingDirectory = new ReactiveProperty<string>().AddTo(Disposable);
             SelectRecordingDirectoryCommand = State
                 .Select(x => x != TargetState.Recording)

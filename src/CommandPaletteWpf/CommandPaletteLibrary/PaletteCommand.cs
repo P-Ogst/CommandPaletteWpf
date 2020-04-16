@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
 namespace CommandPaletteLibrary
@@ -15,11 +14,18 @@ namespace CommandPaletteLibrary
 
         public IEnumerable<IPaletteParameter> Parameters { get; }
 
-        public PaletteCommand(ICommand command, string name = null, string explanation = null, IEnumerable<IPaletteParameter> parameters = null)
+        public Func<IEnumerable<object>, object> CreateCommandParameter { get; }
+
+        public PaletteCommand(ICommand command,
+                              string name = null,
+                              string explanation = null,
+                              Func<IEnumerable<object>, object> createCommandParameter = null,
+                              IEnumerable<IPaletteParameter> parameters = null)
         {
             Command = command ?? throw new ArgumentNullException();
             Name = name;
             Explanation = explanation;
+            CreateCommandParameter = createCommandParameter;
             Parameters = parameters;
         }
     }

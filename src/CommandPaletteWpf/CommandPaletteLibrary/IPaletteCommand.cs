@@ -7,6 +7,7 @@ namespace CommandPaletteLibrary
 {
     public interface IPaletteCommand
     {
+        Func<IEnumerable<object>, object> CreateCommandParameter { get; }
         ICommand Command { get; }
         string Name { get; }
         string Explanation { get; }

@@ -25,7 +25,7 @@
                     <local:TokenTextBox.InputBindings>
                         <KeyBinding Key="Down" Command="{Binding SelectNextItemCommand, ElementName=commandPaletteUserControl}"/>
                         <KeyBinding Key="Up" Command="{Binding SelectPrevItemCommand, ElementName=commandPaletteUserControl}"/>
-                        <KeyBinding Gesture="Enter" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}" CommandParameter="{Binding SelectedItem, ElementName=commandResultListView}"/>
+                        <KeyBinding Gesture="Enter" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}"/>
                     </local:TokenTextBox.InputBindings>
                     <FlowDocument>
                         <Paragraph>
@@ -63,7 +63,7 @@
                        Placement="Bottom">
                     <Border BorderBrush="Gray">
                         <StackPanel Background="White">
-                            <TextBlock Text="パラメーターの説明です" Margin="2"/>
+                            <TextBlock Text="{Binding ParameterExplanation, ElementName=commandPaletteUserControl}" Margin="2"/>
                         </StackPanel>
                     </Border>
                 </Popup>
