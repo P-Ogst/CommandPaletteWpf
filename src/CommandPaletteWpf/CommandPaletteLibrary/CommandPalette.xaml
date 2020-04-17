@@ -8,6 +8,33 @@
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="commandPaletteUserControl">
     <UserControl.Resources>
+        <DataTemplate x:Key="CommandSelectTemplate">
+            <ListView x:Name="commandResultListView" SelectedItem="{Binding SelectedCommandItem, ElementName=commandPaletteUserControl}" ItemsSource="{Binding FocusedItem, ElementName=commandPaletteUserControl}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.InputBindings>
+                                <MouseBinding Gesture="LeftClick" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}" CommandParameter="{Binding .}"/>
+                            </StackPanel.InputBindings>
+                            <TextBlock Text="{Binding Name}"/>
+                            <TextBlock Text=" : "/>
+                            <TextBlock Text="{Binding Explanation}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </DataTemplate>
+        <DataTemplate x:Key="ValueInputTemplate">
+            <StackPanel Background="White">
+                <TextBlock Text="{Binding ParameterExplanation, ElementName=commandPaletteUserControl}" Margin="2"/>
+            </StackPanel>
+        </DataTemplate>
+        <local:ResultTemplateSelector x:Key="ResultTemplateSelector" CommandSelector="{StaticResource CommandSelectTemplate}" ValueInputSelector="{StaticResource ValueInputTemplate}"/>
         <DataTemplate x:Key="ExplanationToken">
             <Border Background="Orange" Opacity="0.8" Padding="2" Margin="2">
                 <TextBlock TextWrapping="NoWrap" Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
@@ -37,34 +64,7 @@
                        IsOpen="{Binding IsCommandResultPopupOpen, ElementName=commandPaletteUserControl}"
                        Placement="Bottom">
                     <Border BorderBrush="Gray">
-                        <ListView x:Name="commandResultListView" ItemsSource="{Binding CommandList, ElementName=commandPaletteUserControl}">
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                </Style>
-                            </ListView.ItemContainerStyle>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <StackPanel.InputBindings>
-                                            <MouseBinding Gesture="LeftClick" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}" CommandParameter="{Binding .}"/>
-                                        </StackPanel.InputBindings>
-                                        <TextBlock Text="{Binding Name}"/>
-                                        <TextBlock Text=" : "/>
-                                        <TextBlock Text="{Binding Explanation}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </Border>
-                </Popup>
-                <Popup x:Name="parameterResultPopup"
-                       IsOpen="{Binding IsParameterResultPopupOpen, ElementName=commandPaletteUserControl}"
-                       Placement="Bottom">
-                    <Border BorderBrush="Gray">
-                        <StackPanel Background="White">
-                            <TextBlock Text="{Binding ParameterExplanation, ElementName=commandPaletteUserControl}" Margin="2"/>
-                        </StackPanel>
+                        <UserControl x:Name="resultView" Content="{Binding FocusedItem, ElementName=commandPaletteUserControl}" ContentTemplateSelector="{StaticResource ResultTemplateSelector}"/>
                     </Border>
                 </Popup>
             </Grid>

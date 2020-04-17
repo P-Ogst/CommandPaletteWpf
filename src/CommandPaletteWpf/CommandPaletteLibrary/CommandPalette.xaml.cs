@@ -35,7 +35,7 @@ namespace CommandPaletteLibrary
                                         typeof(bool),
                                         typeof(CommandPalette),
                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
+        
         internal object FocusedItem
         {
             get { return (object)GetValue(FocusedItemProperty); }
@@ -114,13 +114,13 @@ namespace CommandPaletteLibrary
         internal static readonly DependencyProperty SearchIndexProperty =
             DependencyProperty.Register(nameof(SearchIndex), typeof(int), typeof(CommandPalette), new PropertyMetadata(-1));
 
-        public string ParameterExplanation
+        internal string ParameterExplanation
         {
             get { return (string)GetValue(ParameterExplanationProperty); }
             set { SetValue(ParameterExplanationProperty, value); }
         }
 
-        public static readonly DependencyProperty ParameterExplanationProperty =
+        internal static readonly DependencyProperty ParameterExplanationProperty =
             DependencyProperty.Register(nameof(ParameterExplanation), typeof(string), typeof(CommandPalette), new PropertyMetadata(string.Empty));
 
         internal string SearchText
@@ -135,11 +135,12 @@ namespace CommandPaletteLibrary
         public CommandPalette()
         {
             InitializeComponent();
-            ExecuteCommand = new DelegateCommand(_ =>
+            ExecuteCommand = new DelegateCommand((obj) =>
                 {
+                    
                     if (SearchIndex == -1)
                     {
-                        _paletteCommand = commandResultListView.SelectedItem as IPaletteCommand;
+                        _paletteCommand = GetCommandResultListView().SelectedItem as IPaletteCommand;
                     }
 
                     if (_paletteCommand == null)
@@ -199,6 +200,11 @@ namespace CommandPaletteLibrary
                 });
             SelectPrevItemCommand = new DelegateCommand(_ =>
             {
+                var commandResultListView = GetCommandResultListView();
+                if (commandResultListView == null)
+                {
+                    return;
+                }
                 var count = commandResultListView.Items.Count;
                 if (count == 0)
                 {
@@ -213,6 +219,11 @@ namespace CommandPaletteLibrary
             });
             SelectNextItemCommand = new DelegateCommand(_ =>
             {
+                var commandResultListView = GetCommandResultListView();
+                if (commandResultListView == null)
+                {
+                    return;
+                }
                 var count = commandResultListView.Items.Count;
                 if (count == 0)
                 {
@@ -227,6 +238,21 @@ namespace CommandPaletteLibrary
             });
             commandPaletteSearchPopup.Opened += OnOpen;
             commandPaletteSearchPopup.Closed += OnClose;
+        }
+
+        private ListView GetCommandResultListView()
+        {
+            try
+            {
+                var contentPresenter = FindVisualChild<ContentPresenter>(resultView);
+                var dataTemplate = (contentPresenter?.ContentTemplateSelector as ResultTemplateSelector)?.CommandSelector;
+
+                return dataTemplate?.FindName("commandResultListView", contentPresenter) as ListView;
+            }
+            catch (InvalidOperationException e)
+            {
+                return null;
+            }
         }
 
         private object GenerateCommandParameter(IPaletteCommand paletteCommand, IList<InputParameter> inputParameterList)
@@ -255,7 +281,9 @@ namespace CommandPaletteLibrary
 
             UpdateViewSource();
 
-            if (commandResultListView.SelectedIndex == -1 
+            var commandResultListView = GetCommandResultListView();
+            if (commandResultListView != null 
+                && commandResultListView.SelectedIndex == -1 
                 && commandResultListView.Items.Count != 0)
             {
                 commandResultListView.SelectedIndex = 0;
@@ -291,9 +319,10 @@ namespace CommandPaletteLibrary
             var commandPalette = (d as CommandPalette);
             commandPalette.UpdateViewSource();
 
-            if (commandPalette.commandResultListView.SelectedIndex == -1 && commandPalette.commandResultListView.Items.Count != 0)
+            var commandResultListView = commandPalette.GetCommandResultListView();
+            if (commandResultListView != null && commandResultListView.SelectedIndex == -1 && commandResultListView.Items.Count != 0)
             {
-                commandPalette.commandResultListView.SelectedIndex = 0;
+                commandResultListView.SelectedIndex = 0;
             }
         }
 
@@ -332,6 +361,27 @@ namespace CommandPaletteLibrary
                 return false;
             };
             viewSource.Refresh();
+        }
+
+        private childItem FindVisualChild<childItem>(DependencyObject obj) where childItem : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is childItem)
+                {
+                    return (childItem)child;
+                }
+                else
+                {
+                    childItem childOfChild = FindVisualChild<childItem>(child);
+                    if (childOfChild != null)
+                    {
+                        return childOfChild;
+                    }
+                }
+            }
+            return null;
         }
     }
 }
