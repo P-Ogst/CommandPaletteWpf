@@ -36,6 +36,15 @@ namespace CommandPaletteLibrary
                                         typeof(CommandPalette),
                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        internal object FocusedItem
+        {
+            get { return (object)GetValue(FocusedItemProperty); }
+            set { SetValue(FocusedItemProperty, value); }
+        }
+
+        internal static readonly DependencyProperty FocusedItemProperty =
+            DependencyProperty.Register(nameof(FocusedItem), typeof(object), typeof(CommandPalette), new PropertyMetadata(null));
+
         public ObservableCollection<IPaletteCommand> CommandList
         {
             get { return (ObservableCollection<IPaletteCommand>)GetValue(CommandListProperty); }
@@ -137,6 +146,7 @@ namespace CommandPaletteLibrary
                     {
                         SearchIndex = -1;
                         commandPaletteSearchPopup.IsOpen = false;
+                        return;
                     }
 
                     if (SearchIndex == -1)
@@ -164,6 +174,7 @@ namespace CommandPaletteLibrary
                     {
                         IsCommandResultPopupOpen = false;
                         IsParameterResultPopupOpen = true;
+                        FocusedItem = _paletteCommand.Parameters.ElementAt(SearchIndex);
                         ParameterExplanation = _paletteCommand.Parameters.ElementAt(SearchIndex).Explanation;
                         return;
                     }
@@ -254,11 +265,13 @@ namespace CommandPaletteLibrary
             {
                 IsCommandResultPopupOpen = true;
                 IsParameterResultPopupOpen = false;
+                FocusedItem = CommandList;
             }
             else
             {
                 IsCommandResultPopupOpen = false;
                 IsParameterResultPopupOpen = true;
+                FocusedItem = CommandList.FirstOrDefault(x => x.Parameters.Count() > 0).Parameters.ElementAt(0);
             }
         }
 
