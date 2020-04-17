@@ -66,18 +66,6 @@ namespace CommandPaletteLibrary
                                         typeof(CommandPalette),
                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public bool IsParameterResultPopupOpen
-        {
-            get { return (bool)GetValue(IsParameterResultPopupOpenProperty); }
-            set { SetValue(IsParameterResultPopupOpenProperty, value); }
-        }
-
-        public static readonly DependencyProperty IsParameterResultPopupOpenProperty =
-            DependencyProperty.Register(nameof(IsParameterResultPopupOpen),
-                                        typeof(bool),
-                                        typeof(CommandPalette),
-                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         internal ICommand SelectNextItemCommand
         {
             get { return (ICommand)GetValue(SelectNextItemCommandProperty); }
@@ -173,10 +161,8 @@ namespace CommandPaletteLibrary
 
                     if (_paletteCommand.Parameters.Count() != SearchIndex)
                     {
-                        IsCommandResultPopupOpen = false;
-                        IsParameterResultPopupOpen = true;
-                        FocusedItem = _paletteCommand.Parameters.ElementAt(SearchIndex);
                         ParameterExplanation = _paletteCommand.Parameters.ElementAt(SearchIndex).Explanation;
+                        FocusedItem = _paletteCommand.Parameters.ElementAt(SearchIndex);
                         return;
                     }
 
@@ -194,6 +180,7 @@ namespace CommandPaletteLibrary
                     commandFindTextBox.Clear();
                     _inputParameterList.Clear();
                     _paletteCommand = null;
+                    IsCommandResultPopupOpen = false;
                     ParameterExplanation = string.Empty;
                     SearchText = string.Empty;
                     IsOpen = false;
@@ -289,16 +276,13 @@ namespace CommandPaletteLibrary
                 commandResultListView.SelectedIndex = 0;
             }
 
+            IsCommandResultPopupOpen = true;
             if (SearchIndex == -1)
             {
-                IsCommandResultPopupOpen = true;
-                IsParameterResultPopupOpen = false;
                 FocusedItem = CommandList;
             }
             else
             {
-                IsCommandResultPopupOpen = false;
-                IsParameterResultPopupOpen = true;
                 FocusedItem = CommandList.FirstOrDefault(x => x.Parameters.Count() > 0).Parameters.ElementAt(0);
             }
         }

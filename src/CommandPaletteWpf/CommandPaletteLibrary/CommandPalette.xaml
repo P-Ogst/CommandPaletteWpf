@@ -9,7 +9,7 @@
              x:Name="commandPaletteUserControl">
     <UserControl.Resources>
         <DataTemplate x:Key="CommandSelectTemplate">
-            <ListView x:Name="commandResultListView" SelectedItem="{Binding SelectedCommandItem, ElementName=commandPaletteUserControl}" ItemsSource="{Binding FocusedItem, ElementName=commandPaletteUserControl}">
+            <ListView x:Name="commandResultListView" ItemsSource="{Binding CommandList, ElementName=commandPaletteUserControl}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
