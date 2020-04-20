@@ -34,7 +34,31 @@
                 <TextBlock Text="{Binding Explanation}" Margin="2"/>
             </StackPanel>
         </DataTemplate>
-        <local:ResultTemplateSelector x:Key="ResultTemplateSelector" CommandSelector="{StaticResource CommandSelectTemplate}" ValueInputSelector="{StaticResource ValueInputTemplate}"/>
+        <DataTemplate x:Key="ParameterSelectTemplate">
+            <StackPanel Background="White">
+                <TextBlock Text="{Binding Explanation}" Margin="2"/>
+                <ListView x:Name="parameterResultListView" ItemsSource="{Binding CandidateParameters}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.InputBindings>
+                                    <MouseBinding Gesture="LeftClick" Command="{Binding ExecuteCommand, ElementName=commandPaletteUserControl}" CommandParameter="{Binding .}"/>
+                                </StackPanel.InputBindings>
+                                <TextBlock Text="{Binding Name}"/>
+                                <TextBlock Text=" : "/>
+                                <TextBlock Text="{Binding Explanation}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </DataTemplate>
+        <local:ResultTemplateSelector x:Key="ResultTemplateSelector" CommandSelector="{StaticResource CommandSelectTemplate}" ValueSearchSelector="{StaticResource ParameterSelectTemplate}" ValueInputSelector="{StaticResource ValueInputTemplate}"/>
         <DataTemplate x:Key="ExplanationToken">
             <Border Background="Orange" Opacity="0.8" Padding="2" Margin="2">
                 <TextBlock TextWrapping="NoWrap" Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>

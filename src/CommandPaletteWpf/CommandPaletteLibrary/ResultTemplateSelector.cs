@@ -11,6 +11,7 @@ namespace CommandPaletteLibrary
     {
         public DataTemplate CommandSelector { get; set; }
 
+        public DataTemplate ValueSearchSelector { get; set; }
         public DataTemplate ValueInputSelector { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -18,6 +19,10 @@ namespace CommandPaletteLibrary
             if (item is ObservableCollection<IPaletteCommand>)
             {
                 return CommandSelector;
+            }
+            else if (item is IPaletteSearchParameter)
+            {
+                return ValueSearchSelector;
             }
             else if (item is IPaletteParameter)
             {

@@ -137,15 +137,30 @@ namespace CommandPaletteLibrary
                     else if (SearchIndex != _paletteCommand.Parameters.Count())
                     {
                         var focusParameter = _paletteCommand.Parameters.ElementAt(SearchIndex);
-                        if (!focusParameter.ValidateInput(SearchText))
+                        if (focusParameter is IPaletteSearchParameter)
                         {
-                            return;
+                            var resultParameter = GetParameterResultListView().SelectedItem as IPaletteSearchItem;
+                            if (!focusParameter.ValidateInput(resultParameter))
+                            {
+                                return;
+                            }
+                            var inputParameter = new InputParameter(focusParameter.Name, focusParameter.CreateInput(resultParameter), focusParameter.CreateInputExplanation(resultParameter));
+                            commandFindTextBox.ReplaceCurrentTextToToken(inputParameter);
+                            _inputParameterList.Add(inputParameter);
                         }
-                        var inputParameter = new InputParameter(focusParameter.Name, focusParameter.CreateInput(SearchText), focusParameter.CreateInputExplanation(SearchText));
+                        else
+                        {
+                            if (!focusParameter.ValidateInput(SearchText))
+                            {
+                                return;
+                            }
+                            var inputParameter = new InputParameter(focusParameter.Name, focusParameter.CreateInput(SearchText), focusParameter.CreateInputExplanation(SearchText));
+                            commandFindTextBox.ReplaceCurrentTextToToken(inputParameter);
+                            _inputParameterList.Add(inputParameter);
+                        }
+                        
 
-                        commandFindTextBox.ReplaceCurrentTextToToken(inputParameter);
                         commandFindTextBox.FocusToLast();
-                        _inputParameterList.Add(inputParameter);
                     }
 
                     SearchIndex++;
@@ -176,44 +191,74 @@ namespace CommandPaletteLibrary
                 });
             SelectPrevItemCommand = new DelegateCommand(_ =>
             {
-                var commandResultListView = GetCommandResultListView();
-                if (commandResultListView == null)
+                var resultListView = GetResultListView();
+                if (resultListView == null)
                 {
                     return;
                 }
-                var count = commandResultListView.Items.Count;
+                var count = resultListView.Items.Count;
                 if (count == 0)
                 {
                     return;
                 }
-                if (commandResultListView.SelectedIndex == -1 || commandResultListView.SelectedIndex == 0)
+                if (resultListView.SelectedIndex == -1 || resultListView.SelectedIndex == 0)
                 {
-                    commandResultListView.SelectedIndex = count - 1;
+                    resultListView.SelectedIndex = count - 1;
                     return;
                 }
-                commandResultListView.SelectedIndex--;
+                resultListView.SelectedIndex--;
             });
             SelectNextItemCommand = new DelegateCommand(_ =>
             {
-                var commandResultListView = GetCommandResultListView();
-                if (commandResultListView == null)
+                var resultListView = GetResultListView();
+                if (resultListView == null)
                 {
                     return;
                 }
-                var count = commandResultListView.Items.Count;
+                var count = resultListView.Items.Count;
                 if (count == 0)
                 {
                     return;
                 }
-                if (commandResultListView.SelectedIndex == -1 || commandResultListView.SelectedIndex == count - 1)
+                if (resultListView.SelectedIndex == -1 || resultListView.SelectedIndex == count - 1)
                 {
-                    commandResultListView.SelectedIndex = 0;
+                    resultListView.SelectedIndex = 0;
                     return;
                 }
-                commandResultListView.SelectedIndex++;
+                resultListView.SelectedIndex++;
             });
             commandPaletteSearchPopup.Opened += OnOpen;
             commandPaletteSearchPopup.Closed += OnClose;
+        }
+
+        private ListView GetResultListView()
+        {
+            var result = GetCommandResultListView();
+            if (result != null)
+            {
+                return result;
+            }
+            result = GetParameterResultListView();
+            if (result != null)
+            {
+                return result;
+            }
+            return null;
+        }
+
+        private ListView GetParameterResultListView()
+        {
+            try
+            {
+                var contentPresenter = FindVisualChild<ContentPresenter>(resultView);
+                var dataTemplate = (contentPresenter?.ContentTemplateSelector as ResultTemplateSelector)?.ValueSearchSelector;
+
+                return dataTemplate?.FindName("parameterResultListView", contentPresenter) as ListView;
+            }
+            catch (InvalidOperationException e)
+            {
+                return null;
+            }
         }
 
         private ListView GetCommandResultListView()
@@ -257,12 +302,12 @@ namespace CommandPaletteLibrary
 
             UpdateViewSource();
 
-            var commandResultListView = GetCommandResultListView();
-            if (commandResultListView != null 
-                && commandResultListView.SelectedIndex == -1 
-                && commandResultListView.Items.Count != 0)
+            var resultListView = GetResultListView();
+            if (resultListView != null 
+                && resultListView.SelectedIndex == -1 
+                && resultListView.Items.Count != 0)
             {
-                commandResultListView.SelectedIndex = 0;
+                resultListView.SelectedIndex = 0;
             }
 
             IsCommandResultPopupOpen = true;
@@ -283,8 +328,48 @@ namespace CommandPaletteLibrary
 
         private void UpdateViewSource()
         {
-            var viewSource = CollectionViewSource.GetDefaultView(CommandList);
-            viewSource.Refresh();
+            if (SearchIndex == -1)
+            {
+                var viewSource = CollectionViewSource.GetDefaultView(CommandList);
+                viewSource.Refresh();
+            }
+            else
+            {
+                var parameter = _paletteCommand.Parameters.ElementAt(SearchIndex) as IPaletteSearchParameter;
+                if (parameter == null)
+                {
+                    return;
+                }
+
+                var viewSource = CollectionViewSource.GetDefaultView(parameter.CandidateParameters);
+
+                if (viewSource == null)
+                {
+                    return;
+                }
+                viewSource.Filter = x =>
+                {
+                    var item = x as IPaletteSearchItem;
+                    if (item == null)
+                    {
+                        return false;
+                    }
+                    if (string.IsNullOrEmpty(SearchText))
+                    {
+                        return true;
+                    }
+                    if (Contains(item.Name, SearchText))
+                    {
+                        return true;
+                    }
+                    if (item.Explanation != null && Contains(item.Explanation, SearchText))
+                    {
+                        return true;
+                    }
+                    return false;
+                };
+                viewSource.Refresh();
+            }
         }
 
         private static void OnSearchTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -292,10 +377,10 @@ namespace CommandPaletteLibrary
             var commandPalette = (d as CommandPalette);
             commandPalette.UpdateViewSource();
 
-            var commandResultListView = commandPalette.GetCommandResultListView();
-            if (commandResultListView != null && commandResultListView.SelectedIndex == -1 && commandResultListView.Items.Count != 0)
+            var resultListView = commandPalette.GetResultListView();
+            if (resultListView != null && resultListView.SelectedIndex == -1 && resultListView.Items.Count != 0)
             {
-                commandResultListView.SelectedIndex = 0;
+                resultListView.SelectedIndex = 0;
             }
         }
 

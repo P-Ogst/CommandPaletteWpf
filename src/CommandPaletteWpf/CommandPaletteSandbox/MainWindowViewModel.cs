@@ -87,6 +87,7 @@ namespace CommandPaletteSandbox
             foreach(var target in TargetList)
             {
                 var targetItem = PaletteParameterFactory.CreateSearchItem(target, target.ToString());
+                targetItemList.Add(targetItem);
             }
             var targetParameter = PaletteParameterFactory.CreateSearchParameter(targetItemList, "Target", "接続先を指定してください");
             _commandService.AddCommand(ConnectCommand,
