@@ -31,7 +31,7 @@
         </DataTemplate>
         <DataTemplate x:Key="ValueInputTemplate">
             <StackPanel Background="White">
-                <TextBlock Text="{Binding ParameterExplanation, ElementName=commandPaletteUserControl}" Margin="2"/>
+                <TextBlock Text="{Binding Explanation}" Margin="2"/>
             </StackPanel>
         </DataTemplate>
         <local:ResultTemplateSelector x:Key="ResultTemplateSelector" CommandSelector="{StaticResource CommandSelectTemplate}" ValueInputSelector="{StaticResource ValueInputTemplate}"/>

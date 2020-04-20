@@ -102,15 +102,6 @@ namespace CommandPaletteLibrary
         internal static readonly DependencyProperty SearchIndexProperty =
             DependencyProperty.Register(nameof(SearchIndex), typeof(int), typeof(CommandPalette), new PropertyMetadata(-1));
 
-        internal string ParameterExplanation
-        {
-            get { return (string)GetValue(ParameterExplanationProperty); }
-            set { SetValue(ParameterExplanationProperty, value); }
-        }
-
-        internal static readonly DependencyProperty ParameterExplanationProperty =
-            DependencyProperty.Register(nameof(ParameterExplanation), typeof(string), typeof(CommandPalette), new PropertyMetadata(string.Empty));
-
         internal string SearchText
         {
             get { return (string)GetValue(SearchTextProperty); }
@@ -161,7 +152,6 @@ namespace CommandPaletteLibrary
 
                     if (_paletteCommand.Parameters.Count() != SearchIndex)
                     {
-                        ParameterExplanation = _paletteCommand.Parameters.ElementAt(SearchIndex).Explanation;
                         FocusedItem = _paletteCommand.Parameters.ElementAt(SearchIndex);
                         return;
                     }
@@ -181,7 +171,6 @@ namespace CommandPaletteLibrary
                     _inputParameterList.Clear();
                     _paletteCommand = null;
                     IsCommandResultPopupOpen = false;
-                    ParameterExplanation = string.Empty;
                     SearchText = string.Empty;
                     IsOpen = false;
                 });
