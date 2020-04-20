@@ -82,6 +82,22 @@ namespace CommandPaletteSandbox
                 {
                     State.Value = TargetState.Connected;
                 });
+
+            var targetItemList = new List<IPaletteSearchItem>();
+            foreach(var target in TargetList)
+            {
+                var targetItem = PaletteParameterFactory.CreateSearchItem(target, target.ToString());
+            }
+            var targetParameter = PaletteParameterFactory.CreateSearchParameter(targetItemList, "Target", "接続先を指定してください");
+            _commandService.AddCommand(ConnectCommand,
+                                       nameof(ConnectCommand),
+                                       "ターゲットと接続します",
+                                       (paramList) =>
+                                       {
+                                           return paramList.First();
+                                       },
+                                       targetParameter);
+
             DisconnectCommand = State
                 .Select(x => x != TargetState.NotConnected)
                 .ToReactiveCommand()
@@ -99,7 +115,7 @@ namespace CommandPaletteSandbox
             {
                 Volume.Value = volume;
             });
-            var parameter = PaletteParameterFactory.CreateMinMaxParameter(0.0f, 1.0f, "Volume", "ボリュームを変更します (0.0 - 1.0)");
+            var volumeParameter = PaletteParameterFactory.CreateMinMaxParameter(0.0f, 1.0f, "Volume", "ボリュームを変更します (0.0 - 1.0)");
             _commandService.AddCommand(ChangeVolumeCommand,
                                        nameof(ChangeVolumeCommand),
                                        "プレイバックボリュームを変更します",
@@ -107,7 +123,7 @@ namespace CommandPaletteSandbox
                                        {
                                            return paramList.First();
                                        },
-                                       parameter);
+                                       volumeParameter);
             RecordingDirectory = new ReactiveProperty<string>().AddTo(Disposable);
             SelectRecordingDirectoryCommand = State
                 .Select(x => x != TargetState.Recording)

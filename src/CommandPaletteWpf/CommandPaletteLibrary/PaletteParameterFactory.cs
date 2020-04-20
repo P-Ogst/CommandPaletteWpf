@@ -14,5 +14,15 @@ namespace CommandPaletteLibrary
             }
             return new MinMaxPaletteParameter<T>(min, max, name, explanation);
         }
+
+        public static IPaletteSearchItem CreateSearchItem(object value, string name, string explanation = null)
+        {
+            return new PaletteSearchItem(value, name, explanation);
+        }
+
+        public static IPaletteParameter CreateSearchParameter(IEnumerable<IPaletteSearchItem> items, string name, string explanation = null)
+        {
+            return new PaletteSearchParameter(items, name, explanation);
+        }
     }
 }
